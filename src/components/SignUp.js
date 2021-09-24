@@ -3,17 +3,48 @@ import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import NavigationBar from "./NavigationBar";
 import { create } from "../firebase";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  updateProfile,
+} from "firebase/auth";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { useStateValue } from "./Context/StateProvider";
 
 const SignUp = () => {
+  const [state, dispatch] = useStateValue();
+
   const history = useHistory();
   const signUp = (e) => {
     e.preventDefault();
-
+    const db = getFirestore();
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
       .then((Auth) => {
         if (Auth) {
+          console.log(Auth);
+          const Name = `${name}`;
+          updateProfile(auth.currentUser, {
+            displayName: Name,
+          }).then(async () => {
+            try {
+              const docRef = await addDoc(collection(db, "users"), {
+                uid: Auth.user.uid,
+                name: Name,
+                email: email,
+                createdAt: new Date(),
+              }).then((user) => {
+                const loggedInUser = {
+                  uid: Auth.user.uid,
+                  name: Name,
+                  email: email,
+                };
+                localStorage.setItem("user", JSON.stringify(loggedInUser));
+              });
+            } catch (a) {
+              alert("Error adding document: ", a);
+            }
+          });
           history.push("/Chat");
         }
       })

@@ -4,9 +4,7 @@ import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 // firebaseApps previously initialized using initializeApp()
 
 export const database = (user) => {
-  return (dispatch) => {
-    const db = getFirestore();
-  };
+  return (dispatch) => {};
 };
 
 const auth = getAuth();

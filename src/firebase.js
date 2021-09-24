@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   getAuth,
 } from "@firebase/auth";
+import { getFirestore } from "@firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -22,6 +23,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth();
-
+const db = getFirestore();
 // export const create = createUserWithEmailAndPassword(auth, email, password);
 // export const enter = signInWithEmailAndPassword(auth, email, password);
