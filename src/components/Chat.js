@@ -9,6 +9,9 @@ import {
   updateDoc,
   collection,
   getDocs,
+  query,
+  where,
+  onSnapshot,
 } from "@firebase/firestore";
 
 const Chat = () => {
@@ -17,6 +20,10 @@ const Chat = () => {
   const db = getFirestore();
 
   useEffect(() => {
+    dispatch({
+      type: "SET_USER",
+      user: state.user,
+    });
     getDocs(collection(db, "users")).then((docSnap) => {
       docSnap.forEach(async (docs) => {
         if (docs.data().uid === userLocal.user.uid) {
@@ -25,7 +32,20 @@ const Chat = () => {
             isOnline: true,
           });
         }
-        console.log(docs.id, " => ", docs.data());
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    const q = query(collection(db, "users"), where("isOnline", "==", true));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const users = [];
+      querySnapshot.forEach((doc) => {
+        if (doc.data().uid != userLocal?.user.uid) users.push(doc.data());
+      });
+      dispatch({
+        type: "GET_REALTIME_USERS",
+        users: users,
       });
     });
   }, []);
@@ -33,17 +53,32 @@ const Chat = () => {
   return (
     <section className="outerBox">
       <div className="listOfUsers">
-        <div className="displayName">
-          <div className="displayPic">
-            <img
-              src="https://i.pinimg.com/originals/be/ac/96/beac96b8e13d2198fd4bb1d5ef56cdcf.jpg"
-              alt=""
-            />
-          </div>
-          <div style={{ margin: "0 10px" }}>
-            <span style={{ fontWeight: 500 }}>Rizwan Khan</span>
-          </div>
-        </div>
+        {state.users.length > 0
+          ? state.users.map((user) => {
+              return (
+                <div className="displayName">
+                  <div className="displayPic">
+                    <img
+                      src="https://i.pinimg.com/originals/be/ac/96/beac96b8e13d2198fd4bb1d5ef56cdcf.jpg"
+                      alt=""
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      margin: "0 10px",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <span style={{ fontWeight: 500 }}>{user.name}</span>
+                    <span style={{ fontWeight: 500 }}>
+                      {user.isOnline ? "online" : "offline"}
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          : null}
       </div>
       <div className="chatArea">
         <div className="chatHeader"> Rizwan Khan </div>

@@ -37,6 +37,8 @@ const SignUp = () => {
                 createdAt: new Date(),
                 isOnline: true,
               });
+              localStorage.setItem("user", JSON.stringify(Auth));
+              history.push("/Chat");
               // .then((user) => {
               //   const loggedInUser = {
               //     uid: Auth.user.uid,
@@ -49,7 +51,6 @@ const SignUp = () => {
               alert("Error adding document: ", a);
             }
           });
-          history.push("/Chat");
         }
       })
       .catch((error) => alert(error.message));

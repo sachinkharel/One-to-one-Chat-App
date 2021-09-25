@@ -30,7 +30,6 @@ const NavigationBar = () => {
           isOnline: false,
         });
       }
-      console.log(docs.id, " => ", docs.data());
     });
     if (state.user || userLocal.user) {
       dispatch({

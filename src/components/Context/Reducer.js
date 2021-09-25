@@ -9,7 +9,7 @@ import {
 
 export const initialState = {
   user: null,
-  GET_REALTIME_USERS: null,
+  users: [],
 };
 const reducer = (state, action) => {
   switch (action.type) {
@@ -19,7 +19,10 @@ const reducer = (state, action) => {
         user: action.user,
       };
     case "GET_REALTIME_USERS":
-      return {};
+      return {
+        ...state,
+        users: action.users,
+      };
     default:
       return state;
   }
