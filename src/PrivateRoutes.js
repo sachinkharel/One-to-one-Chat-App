@@ -4,12 +4,13 @@ import { useStateValue } from "./components/Context/StateProvider";
 
 function PrivateRoutes({ component: Component, ...rest }) {
   const [state, dispatch] = useStateValue();
+  const userLocal = JSON.parse(localStorage.getItem("user"));
   return (
     <Route
       {...rest}
       render={(props) =>
         // console.log(props)
-        state.user ? (
+        userLocal?.user ? (
           <Component {...props} />
         ) : (
           <Redirect to={{ pathname: "/", state: { from: props.location } }} />

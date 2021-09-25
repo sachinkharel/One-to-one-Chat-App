@@ -15,10 +15,12 @@ const SignUp = () => {
   const [state, dispatch] = useStateValue();
 
   const history = useHistory();
+  const db = getFirestore();
+  const auth = getAuth();
+
   const signUp = (e) => {
     e.preventDefault();
-    const db = getFirestore();
-    const auth = getAuth();
+
     createUserWithEmailAndPassword(auth, email, password)
       .then((Auth) => {
         if (Auth) {
@@ -33,14 +35,16 @@ const SignUp = () => {
                 name: Name,
                 email: email,
                 createdAt: new Date(),
-              }).then((user) => {
-                const loggedInUser = {
-                  uid: Auth.user.uid,
-                  name: Name,
-                  email: email,
-                };
-                localStorage.setItem("user", JSON.stringify(loggedInUser));
+                isOnline: true,
               });
+              // .then((user) => {
+              //   const loggedInUser = {
+              //     uid: Auth.user.uid,
+              //     name: Name,
+              //     email: email,
+              //   };
+              //   // localStorage.setItem("user", JSON.stringify(loggedInUser));
+              // });
             } catch (a) {
               alert("Error adding document: ", a);
             }

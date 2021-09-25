@@ -8,17 +8,21 @@ import { useStateValue } from "./Context/StateProvider";
 const Login = () => {
   const [state, dispatch] = useStateValue();
   const history = useHistory();
-  const signIn = (e) => {
+
+  const signIn = async (e) => {
     e.preventDefault();
 
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email, password)
       .then((Auth) => {
+        localStorage.setItem("user", JSON.stringify(Auth));
         if (Auth) {
           dispatch({
             type: "SET_USER",
             user: Auth,
           });
+          //console.log(Auth.user.displayName);
+
           history.push("/Chat");
         }
       })
