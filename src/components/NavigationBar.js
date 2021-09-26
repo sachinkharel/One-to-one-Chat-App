@@ -45,7 +45,7 @@ const NavigationBar = () => {
     <div>
       <Navbar bg="dark" variant="dark">
         <Container>
-          <Navbar.Brand>One-to-One-Chat</Navbar.Brand>
+          <Navbar.Brand>One-to-One-Chat-App</Navbar.Brand>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">
             <Navbar.Text>

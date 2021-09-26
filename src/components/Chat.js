@@ -155,14 +155,33 @@ const Chat = () => {
   return (
     <section className="outerBox">
       <div className="listOfUsers">
-        {state.users.length > 0
-          ? state.users.map((user) => {
-              return <User onClick={initChat} key={user.uid} user={user} />;
-            })
-          : null}
+        {state.users.length > 0 ? (
+          state.users.map((user) => {
+            return <User onClick={initChat} key={user.uid} user={user} />;
+          })
+        ) : (
+          <p
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              backgroundColor: "lightgray",
+              color: "black",
+              fontWeight: "bold",
+              padding: "8px",
+            }}
+          >
+            No one is online
+          </p>
+        )}
       </div>
       <div className="chatArea">
-        <div className="chatHeader">{chatStarted ? chatUser : ""}</div>
+        <div className="chatHeader">
+          {chatStarted
+            ? chatUser
+            : state.users.length > 0
+            ? "Click an user to start chatting!"
+            : ""}
+        </div>
         <div className="messageSections">
           {chatStarted
             ? state.conversations.map((con) => (
@@ -176,10 +195,10 @@ const Chat = () => {
                   <p>
                     {con.user_uid_1 === userLocal?.user.uid
                       ? con.isView
-                        ? "seen"
+                        ? "✅✅seen"
                         : chatingUser.isOnline
-                        ? "delivered"
-                        : "sent"
+                        ? " ✓✓ delivered"
+                        : "🗸 sent"
                       : " "}
                   </p>
                 </div>
