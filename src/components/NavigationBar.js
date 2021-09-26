@@ -45,12 +45,11 @@ const NavigationBar = () => {
     <div>
       <Navbar bg="dark" variant="dark">
         <Container>
-          <Navbar.Brand>Financepeer Test</Navbar.Brand>
+          <Navbar.Brand>One-to-One-Chat</Navbar.Brand>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">
             <Navbar.Text>
-              Signed in as:
-              {userLocal?.user.displayName}
+              Signed in as: - {userLocal?.user.displayName}
             </Navbar.Text>
           </Navbar.Collapse>
           {state.user || userLocal?.user ? (

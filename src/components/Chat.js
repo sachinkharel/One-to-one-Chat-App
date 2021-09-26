@@ -23,7 +23,7 @@ const User = (props) => {
     <div onClick={() => onClick(user)} className="displayName">
       <div className="displayPic">
         <img
-          src="https://i.pinimg.com/originals/be/ac/96/beac96b8e13d2198fd4bb1d5ef56cdcf.jpg"
+          src="https://st.depositphotos.com/2218212/2938/i/950/depositphotos_29387653-stock-photo-facebook-profile.jpg"
           alt=""
         />
       </div>
@@ -50,6 +50,7 @@ const Chat = () => {
   const [chatUser, setChatUser] = useState("");
   const [message, setMessage] = useState("");
   const [userUid, setUserUid] = useState("");
+  const [chatingUser, setChatingUser] = useState("");
   const userLocal = JSON.parse(localStorage.getItem("user"));
   const db = getFirestore();
 
@@ -94,29 +95,48 @@ const Chat = () => {
       const messages = [];
       querySnapshot.forEach((doc) => {
         if (
-          (doc.data().user_uid_1 == user.user_uid_1 &&
-            doc.data().user_uid_2 == user.user_uid_2) ||
-          (doc.data().user_uid_1 == user.user_uid_2 &&
-            doc.data().user_uid_2 == user.user_uid_1)
+          (doc.data().user_uid_1 === user.user_uid_1 &&
+            doc.data().user_uid_2 === user.user_uid_2) ||
+          (doc.data().user_uid_1 === user.user_uid_2 &&
+            doc.data().user_uid_2 === user.user_uid_1)
         ) {
           messages.push(doc.data());
         }
-        if (messages.length > 0) {
-          dispatch({
-            type: "REAL_TIME_MESSAGE",
-            conversations: messages,
-          });
-        }
+        // if (messages.length > 0) {
+        //   dispatch({
+        //     type: "REAL_TIME_MESSAGE",
+        //     conversations: messages,
+        //   });
+        // }
+      });
+      dispatch({
+        type: "REAL_TIME_MESSAGE",
+        conversations: messages,
       });
       console.log(messages);
     });
   };
 
+  const setView = (user) => {
+    getDocs(collection(db, "messages")).then((docSnap) => {
+      docSnap.forEach(async (docs) => {
+        if (docs.data().user_uid_1 === user.uid) {
+          const userInfo = doc(db, "messages", docs.id);
+          await updateDoc(userInfo, {
+            isView: true,
+          });
+        }
+      });
+    });
+  };
+
   const initChat = (user) => {
     setChatStarted(true);
+    setChatingUser(user);
     setChatUser(`${user.name}`);
     setUserUid(user.uid);
     GetMessages({ user_uid_1: userLocal.user.uid, user_uid_2: user.uid });
+    setView(user);
   };
 
   const sendMessage = () => {
@@ -127,6 +147,7 @@ const Chat = () => {
     };
     if (message !== "") {
       DBsendMessage(msgObj);
+      setMessage("");
     }
     console.log(msgObj);
   };
@@ -148,10 +169,19 @@ const Chat = () => {
                 <div
                   style={{
                     textAlign:
-                      con.user_uid_1 == userLocal.user.uid ? "right" : "left",
+                      con.user_uid_1 === userLocal.user.uid ? "right" : "left",
                   }}
                 >
                   <p className="messageStyle">{con.message}</p>
+                  <p>
+                    {con.user_uid_1 === userLocal?.user.uid
+                      ? con.isView
+                        ? "seen"
+                        : chatingUser.isOnline
+                        ? "delivered"
+                        : "sent"
+                      : " "}
+                  </p>
                 </div>
               ))
             : null}
