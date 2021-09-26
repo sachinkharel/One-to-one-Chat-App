@@ -12,8 +12,10 @@ import {
   query,
   where,
   onSnapshot,
+  orderBy,
 } from "@firebase/firestore";
-import { auth } from "../firebase";
+
+import { DBsendMessage } from "../Messages";
 
 const User = (props) => {
   const { user, onClick } = props;
@@ -82,10 +84,39 @@ const Chat = () => {
     });
   }, []);
 
+  const GetMessages = (user) => {
+    const q = query(
+      collection(db, "messages"),
+      where("user_uid_1", "in", [user.user_uid_1, user.user_uid_2]),
+      orderBy("createdAt", "asc")
+    );
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const messages = [];
+      querySnapshot.forEach((doc) => {
+        if (
+          (doc.data().user_uid_1 == user.user_uid_1 &&
+            doc.data().user_uid_2 == user.user_uid_2) ||
+          (doc.data().user_uid_1 == user.user_uid_2 &&
+            doc.data().user_uid_2 == user.user_uid_1)
+        ) {
+          messages.push(doc.data());
+        }
+        if (messages.length > 0) {
+          dispatch({
+            type: "REAL_TIME_MESSAGE",
+            conversations: messages,
+          });
+        }
+      });
+      console.log(messages);
+    });
+  };
+
   const initChat = (user) => {
     setChatStarted(true);
     setChatUser(`${user.name}`);
     setUserUid(user.uid);
+    GetMessages({ user_uid_1: userLocal.user.uid, user_uid_2: user.uid });
   };
 
   const sendMessage = () => {
@@ -94,6 +125,9 @@ const Chat = () => {
       user_uid_2: userUid,
       message,
     };
+    if (message !== "") {
+      DBsendMessage(msgObj);
+    }
     console.log(msgObj);
   };
 
@@ -109,11 +143,18 @@ const Chat = () => {
       <div className="chatArea">
         <div className="chatHeader">{chatStarted ? chatUser : ""}</div>
         <div className="messageSections">
-          {chatStarted ? (
-            <div style={{ textAlign: "left" }}>
-              <p className="messageStyle">Hello User</p>
-            </div>
-          ) : null}
+          {chatStarted
+            ? state.conversations.map((con) => (
+                <div
+                  style={{
+                    textAlign:
+                      con.user_uid_1 == userLocal.user.uid ? "right" : "left",
+                  }}
+                >
+                  <p className="messageStyle">{con.message}</p>
+                </div>
+              ))
+            : null}
         </div>
         {chatStarted ? (
           <div className="chatControls">

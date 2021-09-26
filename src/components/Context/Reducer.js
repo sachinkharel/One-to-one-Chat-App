@@ -10,6 +10,7 @@ import {
 export const initialState = {
   user: null,
   users: [],
+  conversations: [],
 };
 const reducer = (state, action) => {
   switch (action.type) {
@@ -22,6 +23,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         users: action.users,
+      };
+    case "REAL_TIME_MESSAGE":
+      return {
+        ...state,
+        conversations: action.conversations,
       };
     default:
       return state;
